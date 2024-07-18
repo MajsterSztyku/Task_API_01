@@ -8,15 +8,19 @@ app = FastAPI()
 
 @app.post("/csv_to_json")
 async def csv_to_json(file: UploadFile = File(...)):
+    #walidacja pliku. Sprawdzanie czy plik jest w rozszerzeniu csv
     if file.content_type != "text/csv":
         raise HTTPException(status_code=400, detail="wrong file")
     # with open("test.csv",mode = "+r",newline="")as plik:
     #     read = csv.reader(plik)
-    # <--- nie działa cały komentarz. Zrozumieć czemu
+    #powyższy komentarz nie działa. FastAPI przy wywołaniu wyczytuje plik z wywołania funkcji
+    
+
     content = await file.read()
     file_content = io.StringIO(content.decode("utf-8"))
     reader = csv.DictReader(file_content) # dictreader pozwala odczytać plik csv w postaci słownika
     json_data = {}
+
     for row in reader:
         for key, value in row.items():
             if key in json_data:
